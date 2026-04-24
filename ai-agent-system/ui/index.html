@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Multi-Agent Studio | Essential 3</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind & Flowbite -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+
+  <!-- Code Highlighting -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/tokyo-night-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bg: '#020617',
+            surface: '#0f172a',
+            border: '#1e293b',
+            accent: '#a855f7',
+            research: '#06b6d4',
+            rewrite: '#10b981',
+            career: '#22c55e'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020617;
+      scroll-behavior: smooth;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 0% 0%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 100%);
+      animation: mesh 20s ease infinite;
+    }
+
+    @keyframes mesh {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .skill-card-active {
+      border-color: var(--card-color) !important;
+      box-shadow: 0 0 30px -5px var(--card-color);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .markdown-body pre {
+      background: #0f172a;
+      padding: 1.5rem;
+      border-radius: 1.25rem;
+      margin: 1.5rem 0;
+      border: 1px solid #1e293b;
+      overflow-x: auto;
+    }
+
+    .markdown-body p { margin-bottom: 1rem; color: #cbd5e1; }
+    .markdown-body ul, .markdown-body ol { margin: 1rem 0; padding-left: 1.5rem; color: #cbd5e1; }
+
+    /* Tool Theme Overrides */
+    .badge-tavily { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.05); }
+    .badge-groq { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+    .badge-sambanova { border-color: #a855f7; color: #a855f7; background: rgba(168, 85, 247, 0.05); }
+
+    .pdf-export-container {
+      background: #ffffff !important;
+      color: #000000 !important;
+      padding: 48px 52px !important;
+      font-family: 'Arial', 'Helvetica', 'Calibri', sans-serif !important;
+      font-size: 11pt !important;
+      line-height: 1.4 !important;
+      max-width: 210mm;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .pdf-export-container * {
+      color: #000000 !important;
+      background: transparent !important;
+      border-color: #cccccc !important;
+    }
+    .pdf-export-container h1 {
+      font-size: 20pt !important;
+      font-weight: 700 !important;
+      margin: 0 0 4px 0 !important;
+      padding: 0 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .pdf-export-container h2 {
+      font-size: 13pt !important;
+      font-weight: 700 !important;
+      margin: 16px 0 6px 0 !important;
+      padding: 0 0 3px 0 !important;
+      border-bottom: 1.5px solid #000000 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .pdf-export-container h3 {
+      font-size: 11pt !important;
+      font-weight: 700 !important;
+      margin: 8px 0 2px 0 !important;
+      padding: 0 !important;
+    }
+    .pdf-export-container p {
+      margin: 0 0 6px 0 !important;
+      color: #000000 !important;
+      font-size: 11pt !important;
+      line-height: 1.45 !important;
+    }
+    .pdf-export-container ul, .pdf-export-container ol {
+      margin: 2px 0 8px 0 !important;
+      padding-left: 18px !important;
+      color: #000000 !important;
+    }
+    .pdf-export-container li {
+      margin-bottom: 2px !important;
+      font-size: 10.5pt !important;
+      line-height: 1.35 !important;
+      color: #000000 !important;
+    }
+    .pdf-export-container strong {
+      font-weight: 700 !important;
+      color: #000000 !important;
+    }
+    .pdf-export-container em {
+      font-style: italic !important;
+      color: #000000 !important;
+    }
+    .pdf-export-container hr {
+      border: none !important;
+      border-top: 1px solid #cccccc !important;
+      margin: 14px 0 !important;
+    }
+    .pdf-export-container a {
+      color: #000000 !important;
+      text-decoration: none !important;
+    }
+    .pdf-export-container pre,
+    .pdf-export-container code {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body class="text-slate-200 antialiased font-sans">
+  <div class="bg-animation"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-xl shadow-lg shadow-purple-500/20">
+          <i data-lucide="brain-circuit" class="w-6 h-6 text-white"></i>
+        </div>
+        <h1 class="text-xl font-display font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+          AI Multi-Agent Studio
+        </h1>
+      </div>
+      <div id="status-badge" class="hidden items-center gap-2 bg-slate-800 text-slate-300 px-4 py-1.5 rounded-full border border-slate-700 text-sm font-medium">
+        <div class="flex gap-1 items-center mr-2">
+          <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+          <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+        </div>
+        <span id="status-text">Processing Task...</span>
+      </div>
+      <div class="text-xs text-slate-500 font-medium px-3 py-1 bg-slate-800/50 rounded-lg border border-slate-700">
+        v3.0 Essential
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-10 space-y-12">
+
+    <!-- Skill Selector Section -->
+    <section>
+      <div class="flex flex-col gap-2 mb-8 text-center sm:text-left">
+        <h2 class="text-2xl font-display font-bold text-white">Choose Your Specialist</h2>
+        <p class="text-slate-400">Select a core tool for your task.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="skill-grid">
+        <!-- Auto -->
+        <div onclick="selectSkill('auto', this)"
+          class="skill-card group relative p-6 bg-slate-900 border border-slate-800 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-slate-800/50 active skill-card-active"
+          style="--card-color: #a855f7">
+          <div class="w-12 h-12 mb-4 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+            <i data-lucide="wand-2" class="w-6 h-6 text-purple-400"></i>
+          </div>
+          <h3 class="font-semibold text-white text-sm">Smart Route</h3>
+          <p class="text-[10px] text-slate-500 mt-1">Manager Decides</p>
+        </div>
+
+        <!-- Research -->
+        <div onclick="selectSkill('research', this)"
+          class="skill-card group relative p-6 bg-slate-900 border border-slate-800 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-slate-800/50"
+          style="--card-color: #06b6d4">
+          <div class="w-12 h-12 mb-4 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
+            <i data-lucide="search" class="w-6 h-6 text-cyan-400"></i>
+          </div>
+          <h3 class="font-semibold text-white text-sm">Research Tool</h3>
+          <p class="text-[10px] text-slate-500 mt-1">Web Intel</p>
+        </div>
+
+        <!-- Humanizer -->
+        <div onclick="selectSkill('rewrite', this)"
+          class="skill-card group relative p-6 bg-slate-900 border border-slate-800 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-slate-800/50"
+          style="--card-color: #10b981">
+          <div class="w-12 h-12 mb-4 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+            <i data-lucide="user-plus" class="w-6 h-6 text-emerald-400"></i>
+          </div>
+          <h3 class="font-semibold text-white text-sm">Humanizer</h3>
+          <p class="text-[10px] text-slate-500 mt-1">Anti-AI Tone</p>
+        </div>
+
+        <!-- Career -->
+        <div onclick="selectSkill('career', this)"
+          class="skill-card group relative p-6 bg-slate-900 border border-slate-800 rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-slate-800/50"
+          style="--card-color: #22c55e">
+          <div class="w-12 h-12 mb-4 rounded-2xl bg-slate-800 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+            <i data-lucide="briefcase" class="w-6 h-6 text-emerald-400"></i>
+          </div>
+          <h3 class="font-semibold text-white text-sm">Career Assist</h3>
+          <p class="text-[10px] text-slate-500 mt-1">CV + Resume</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Input Area -->
+    <section class="relative">
+      <div class="p-8 bg-slate-900/50 border border-slate-800 rounded-[2.5rem] shadow-inner">
+        <textarea id="task-input" rows="3"
+          class="block w-full px-0 text-xl text-white bg-transparent border-0 focus:ring-0 placeholder-slate-600 resize-none transition-all"
+          placeholder="Paste job link or request research..."></textarea>
+
+        <div class="flex items-center justify-between mt-6 pt-6 border-t border-slate-800/50">
+          <div class="text-slate-500 text-xs italic">
+            Press Execute to begin orchestration...
+          </div>
+
+          <button id="run-btn" onclick="runTask()"
+            class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold rounded-2xl shadow-xl shadow-purple-900/20 transition-all transform active:scale-95">
+            <span>Execute Agent</span>
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agent Trace + Results Section -->
+    <section id="output-section" class="hidden space-y-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-display font-bold text-white flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-accent">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </span>
+          Studio Response
+        </h2>
+        <div class="flex gap-2">
+          <button id="download-cv-pdf-btn" onclick="downloadPDF('cv')"
+            class="hidden items-center gap-2 px-4 py-2 bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 rounded-xl text-sm font-bold hover:bg-emerald-600/30 transition-all">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            CV PDF
+          </button>
+          <button id="download-cover-pdf-btn" onclick="downloadPDF('cover')"
+            class="hidden items-center gap-2 px-4 py-2 bg-fuchsia-600/20 text-fuchsia-400 border border-fuchsia-600/30 rounded-xl text-sm font-bold hover:bg-fuchsia-600/30 transition-all">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Cover Letter PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Agent Trace Panel -->
+      <div id="trace-panel" class="hidden bg-slate-900/80 border border-slate-700/50 rounded-2xl p-5 space-y-2">
+        <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3 flex items-center gap-2">
+          <i data-lucide="cpu" class="w-3.5 h-3.5"></i> Agent Trace
+        </p>
+        <div id="trace-steps" class="space-y-2"></div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div class="px-8 py-4 bg-slate-800/30 border-b border-slate-800 flex justify-between items-center text-xs font-semibold uppercase text-slate-400">
+           <div class="flex gap-2 items-center">
+             <span>ENGINE:</span>
+             <span id="out-tool" class="px-3 py-1 rounded-lg border text-white badge-groq">GROQ</span>
+           </div>
+           <div class="flex gap-2 items-center">
+            <span>SKILL:</span>
+            <span id="out-skill" class="bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 text-white shadow-sm">RESEARCH</span>
+          </div>
+        </div>
+        <div class="p-10 markdown-body text-slate-300" id="out-body"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-12 border-t border-slate-900 text-center text-slate-600 text-xs">
+    SambaNova + Groq + Tavily | Optimized Essential Studio v3.0
+  </footer>
+
+  <script>
+    lucide.createIcons();
+    let currentSkill = 'auto';
+
+    function renderTraceSteps(steps) {
+      const panel = document.getElementById('trace-panel');
+      const container = document.getElementById('trace-steps');
+      container.innerHTML = '';
+      panel.classList.remove('hidden');
+
+      steps.forEach((step, i) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-start gap-3 text-sm text-slate-400 opacity-0 transition-all duration-300';
+        el.style.transitionDelay = `${i * 100}ms`;
+        el.innerHTML = `
+          <span class="text-lg mt-0.5">${step.icon}</span>
+          <div>
+            <span class="text-slate-300">${step.text}</span>
+          </div>`;
+        container.appendChild(el);
+        // Animate in with a slight delay
+        setTimeout(() => el.classList.replace('opacity-0', 'opacity-100'), i * 120);
+      });
+    }
+
+    function selectSkill(skill, el) {
+      currentSkill = skill;
+      document.querySelectorAll('.skill-card').forEach(c => c.classList.remove('skill-card-active'));
+      el.classList.add('skill-card-active');
+      document.getElementById('output-section').classList.add('hidden');
+      document.getElementById('trace-panel').classList.add('hidden');
+      document.getElementById('trace-steps').innerHTML = '';
+
+      // Update Placeholder based on tool
+      const input = document.getElementById('task-input');
+      const placeholders = {
+        'auto': "What should I explore or build for you today?",
+        'research': "Enter a topic or question to research (e.g., Latest news on AI)...",
+        'rewrite': "Paste your AI-generated text here to make it sound human...",
+        'career': "Paste a Job Link or Job Description to tailor your CV..."
+      };
+      input.placeholder = placeholders[skill] || "What should I build for you today?";
+      input.value = '';
+      input.focus();
+    }
+
+    async function runTask() {
+      const text = document.getElementById('task-input').value.trim();
+      if (!text) return;
+
+      const runBtn = document.getElementById('run-btn');
+      const outSection = document.getElementById('output-section');
+      const outBody = document.getElementById('out-body');
+      const status = document.getElementById('status-badge');
+
+      runBtn.disabled = true;
+      status.classList.remove('hidden');
+      status.classList.add('flex');
+      outSection.classList.remove('hidden');
+      // Reset trace
+      document.getElementById('trace-panel').classList.add('hidden');
+      document.getElementById('trace-steps').innerHTML = '';
+      outBody.innerHTML = '<div class="space-y-4 animate-pulse"><div class="h-4 bg-slate-800 rounded-full w-3/4"></div><div class="h-4 bg-slate-800 rounded-full"></div></div>';
+
+      const formData = new FormData();
+      formData.append('task', text);
+      if (currentSkill !== 'auto') formData.append('manual_skill', currentSkill);
+
+      try {
+        const resp = await fetch('/run', { method: 'POST', body: formData });
+        const data = await resp.json();
+
+        if (data.status === 'success') {
+          // Render the step-by-step agent trace
+          if (data.steps && data.steps.length > 0) {
+            renderTraceSteps(data.steps);
+          }
+
+          document.getElementById('out-skill').textContent = data.selected_skill.toUpperCase();
+          const toolEl = document.getElementById('out-tool');
+          toolEl.textContent = data.tool.toUpperCase();
+
+          toolEl.className = 'px-3 py-1 rounded-lg border text-white';
+          if (data.tool.toLowerCase().includes('sambanova')) toolEl.classList.add('badge-sambanova');
+          else if (data.tool.toLowerCase().includes('tavily')) toolEl.classList.add('badge-tavily');
+          else toolEl.classList.add('badge-groq');
+
+          outBody.innerHTML = marked.parse(data.final_output);
+          hljs.highlightAll();
+
+          // Career: show separate download buttons
+          const cvBtn = document.getElementById('download-cv-pdf-btn');
+          const coverBtn = document.getElementById('download-cover-pdf-btn');
+          if (data.selected_skill === 'career' && data.cv_text) {
+            cvBtn.classList.remove('hidden');
+            cvBtn.classList.add('flex');
+            cvBtn.dataset.content = data.cv_text;
+            coverBtn.classList.remove('hidden');
+            coverBtn.classList.add('flex');
+            coverBtn.dataset.content = data.cover_letter_text || data.final_output;
+          } else {
+            cvBtn.classList.add('hidden');
+            cvBtn.classList.remove('flex');
+            coverBtn.classList.add('hidden');
+            coverBtn.classList.remove('flex');
+          }
+
+          outSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {
+        outBody.innerHTML = 'Error happened during processing.';
+      } finally {
+        runBtn.disabled = false;
+        status.classList.add('hidden');
+      }
+    }
+
+    async function downloadPDF(type) {
+      const btnId = type === 'cv' ? 'download-cv-pdf-btn' : 'download-cover-pdf-btn';
+      const btn = document.getElementById(btnId);
+      const content = btn?.dataset?.content;
+      if (!content) return;
+
+      const filename = type === 'cv' ? 'Fakhr_E_Alam_Khan_CV.pdf' : 'Cover_Letter.pdf';
+
+      // Build a clean, professional HTML document for PDF
+      const element = document.createElement('div');
+      element.className = 'pdf-export-container';
+
+      // Parse markdown to HTML
+      let html = marked.parse(content);
+
+      // Clean up: remove the section header like "## TAILORED CV" from the CV PDF
+      if (type === 'cv') {
+        html = html.replace(/<h2[^>]*>.*?TAILORED CV.*?<\/h2>/gi, '');
+      }
+      // Clean up cover letter header
+      if (type === 'cover') {
+        html = html.replace(/<h2[^>]*>.*?COVER LETTER.*?<\/h2>/gi, '');
+      }
+
+      element.innerHTML = html;
+
+      // Temporarily add to DOM (required for html2pdf) but keep invisible
+      element.style.position = 'fixed';
+      element.style.left = '-9999px';
+      element.style.top = '0';
+      document.body.appendChild(element);
+
+      const opt = {
+        margin: [0.5, 0.6, 0.5, 0.6],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false
+        },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+
+      const origHTML = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Generating...';
+      lucide.createIcons();
+      try {
+        await html2pdf().set(opt).from(element).save();
+      } finally {
+        document.body.removeChild(element);
+        btn.innerHTML = origHTML;
+        lucide.createIcons();
+      }
+    }
+  </script>
+</body>
+</html>

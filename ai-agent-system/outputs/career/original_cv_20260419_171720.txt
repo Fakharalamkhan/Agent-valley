@@ -1,0 +1,37 @@
+FAKHR E ALAM KHAN
+Karlsruhe, Germany | +49 160 7748327 | fakharalamkhhan@gmail.com | github.com/Fakharalamkhan
+PROFILE
+Master’s student in Natural Language Processing with a strong interest in applied AI systems, especially Large Language Models, retrieval-augmented generation, and agent-based architectures. Seeking volunteer research assistant opportunities or collaborative projects in NLP and AI systems to deepen research experience and contribute to academic or applied research work. Comfortable working on LLM pipelines, backend systems, and AI-driven automation.
+EDUCATION
+**University of Trier** | *Trier, Germany* | Oct 2025 – Present |
+Master of Science in Natural Language Processing nm
+• Focus areas: Large Language Models, Neural Machine Translation, Stochastic Modeling, and NLP systems.
+
+**Sir Syed CASE Institute of Technology** | *Islamabad* | Sep 2020 – Jul 2024 |
+Bachelor of Science in Computer Science nm
+• Strong foundation in software engineering, algorithms, and machine learning.
+• Winner: IEEE Speed Coding Competition (2022).
+EXPERIENCE & PROJECTS
+AI Engineering Project (Buildyrs) Jan 2026 – Mar 2026 
+• Built a prototype multi-agent system for task automation using LLM-based tool orchestration.
+• Explored context management techniques to improve long-form LLM reasoning consistency.
+• Implemented basic memory mechanisms for structured information storage and retrieval.
+• Experimented with adaptive planning and reflection-based workflows in LLM agents.
+Software Engineering Role (Cafevista AI) Jul 2024 – Feb 2025 
+• Contributed to development of a web and mobile platform serving 800+ users.
+• Worked on backend APIs and real-time communication using WebSockets.
+• Supported CI/CD automation using GitHub Actions, improving deployment efficiency.
+• Assisted in performance optimization and system stability improvements.
+SELECTED PROJECTS
+LLM Agent System 2025
+• Developed experimental LLM-based agent workflows integrating tool use and retrieval (RAG).
+• Focused on improving contextual response quality through structured prompting and memory design.
+SchoolMentor App App Link
+• Built educational platform supporting 1,500+ students.
+• Implemented core app features and backend integration.
+TECHNICAL SKILLS
+• AI & NLP: Transformers, Prompting, RAG, LLM APIs, Agent-based systems (basic), Context engineering.
+• Programming: Python, JavaScript, Dart, SQL.
+• Backend & Systems: Node.js, REST APIs, PostgreSQL.
+• Cloud & DevOps: AWS (basic), Azure (basic), Docker, CI/CD.
+• Languages: Urdu (Native), English (C1), German (A2)
